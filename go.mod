@@ -1,4 +1,4 @@
-module gjson
+module github.com/yushaona/gjson
 
 go 1.15
 
