@@ -9,15 +9,23 @@ import (
 	"github.com/valyala/fastjson"
 )
 
+type GjsonType int
+
+const (
+	_ = iota
+	TypeObject
+	TypeArray
+)
+
 //GJSON struct
 type GJSON struct {
 	data  *fastjson.Value
 	arena fastjson.Arena
 }
 
-func NewGJSON() *GJSON {
+func NewGJSON(t GjsonType) *GJSON {
 	result := new(GJSON)
-	result.initGJSON(1)
+	result.initGJSON(t)
 	return result
 }
 
@@ -164,7 +172,7 @@ func (t *GJSON) Item(index int) (result *GJSON) {
 
 func (t *GJSON) Interface() interface{} {
 	//map[string]interface{}
-	t.initGJSON(1)
+	t.initGJSON(TypeObject)
 	if t.data.Type() == fastjson.TypeObject {
 		obj, err := t.data.Object()
 		if err != nil {
@@ -208,7 +216,7 @@ func (t *GJSON) Load(s string) (err error) {
 }
 
 func (t *GJSON) ItemCount() (num int) {
-	t.initGJSON(2)
+	t.initGJSON(TypeArray)
 	if t.data.Type() == fastjson.TypeArray {
 		slic, err := t.data.Array()
 		if err != nil {
@@ -221,14 +229,14 @@ func (t *GJSON) ItemCount() (num int) {
 
 //AddItem  添加一个子对象
 func (t *GJSON) AddItem() (result *GJSON) {
-	t.initGJSON(2)
+	t.initGJSON(TypeArray)
 	if t.data.Type() == fastjson.TypeArray {
 		slic, err := t.data.Array()
 		if err != nil {
 			return nil
 		}
 		var temp GJSON
-		temp.initGJSON(1)
+		temp.initGJSON(TypeObject)
 		result = &temp
 		t.data.SetArrayItem(len(slic), temp.data)
 	}
@@ -239,12 +247,12 @@ func (t *GJSON) ToString() string {
 	return t.data.String()
 }
 
-func (t *GJSON) initGJSON(flag int) {
+func (t *GJSON) initGJSON(flag GjsonType) {
 	if t.data == nil {
 		switch flag {
-		case 1:
+		case TypeObject:
 			t.data = t.arena.NewObject()
-		case 2:
+		case TypeArray:
 			t.data = t.arena.NewArray()
 		default:
 			t.data = t.arena.NewObject()
@@ -254,7 +262,7 @@ func (t *GJSON) initGJSON(flag int) {
 
 //////////////////////////////////////////////////Set*/////////////////////////
 func (t *GJSON) SetBool(k string, v bool) {
-	t.initGJSON(1)
+	t.initGJSON(TypeObject)
 	if t.data.Type() == fastjson.TypeObject {
 		if v == true {
 			t.data.Set(k, t.arena.NewTrue())
@@ -265,42 +273,42 @@ func (t *GJSON) SetBool(k string, v bool) {
 }
 
 func (t *GJSON) SetFloat64(k string, v float64) {
-	t.initGJSON(1)
+	t.initGJSON(TypeObject)
 	if t.data.Type() == fastjson.TypeObject {
 		t.data.Set(k, t.arena.NewNumberFloat64(v))
 	}
 }
 
 func (t *GJSON) SetInt(k string, v int) {
-	t.initGJSON(1)
+	t.initGJSON(TypeObject)
 	if t.data.Type() == fastjson.TypeObject {
 		t.data.Set(k, t.arena.NewNumberInt(v))
 	}
 }
 
 func (t *GJSON) SetString(k, v string) {
-	t.initGJSON(1)
+	t.initGJSON(TypeObject)
 	if t.data.Type() == fastjson.TypeObject {
 		t.data.Set(k, t.arena.NewString(v))
 	}
 }
 
 func (t *GJSON) SetBytes(k string, v []byte) {
-	t.initGJSON(1)
+	t.initGJSON(TypeObject)
 	if t.data.Type() == fastjson.TypeObject {
 		t.data.Set(k, t.arena.NewStringBytes(v))
 	}
 }
 
 func (t *GJSON) SetObject(k string, v GJSON) {
-	t.initGJSON(1)
+	t.initGJSON(TypeObject)
 	if t.data.Type() == fastjson.TypeObject {
 		t.data.Set(k, v.data)
 	}
 }
 
 func (t *GJSON) SetArray(k string, v GJSON) {
-	t.initGJSON(1)
+	t.initGJSON(TypeObject)
 	if t.data.Type() == fastjson.TypeObject {
 		t.data.Set(k, v.data)
 	}
