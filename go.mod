@@ -1,4 +1,4 @@
-module gojson
+module gjson
 
 go 1.15
 
