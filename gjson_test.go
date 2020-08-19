@@ -86,3 +86,16 @@ func TestParseJSON(t *testing.T) {
 
 	}
 }
+
+func TestExist(t *testing.T) {
+	var main GJSON
+	err := main.Load(`{"BigIntSupported":9223372036854775807,"date":"20180322","city":"北京","data":{"pm25":73.5,"ganmao":"极少数敏感人群应减少户外活动","yesterday":{"date":"21日星期三","aqi":85}},"forecast":[{"aqi":98,"notice":"愿你拥有比阳光明媚的心情"},{"aqi":118,"notice":"阴晴之间，谨防紫外线侵扰"}]}`)
+	if err != nil {
+		t.Fatal(err.Error())
+	} else {
+		t.Log(main.IsExist("BigIntSupported"))
+		t.Log(main.IsExist("BigInt"))
+		t.Log(main.IsExist("data"))
+		t.Log(main.IsExist("forecast"))
+	}
+}
