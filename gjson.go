@@ -15,6 +15,12 @@ type GJSON struct {
 	arena fastjson.Arena
 }
 
+func NewGJSON() *GJSON {
+	result := new(GJSON)
+	result.initGJSON(1)
+	return result
+}
+
 //////////////////////////////////////// Get* ////////////////////////////////
 
 //GetBool  only fastjson.TypeBool Type  get bool value return correct
@@ -158,6 +164,7 @@ func (t *GJSON) Item(index int) (result *GJSON) {
 
 func (t *GJSON) Interface() interface{} {
 	//map[string]interface{}
+	t.initGJSON(1)
 	if t.data.Type() == fastjson.TypeObject {
 		obj, err := t.data.Object()
 		if err != nil {
