@@ -3,6 +3,7 @@ package gjson
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/valyala/fastjson/fastfloat"
 
@@ -147,6 +148,24 @@ func (t *GJSON) GetInt64(k string) int64 {
 		return res
 	}
 	return 0
+}
+func (t *GJSON) GetTime(k string) (result time.Time) {
+	v := t.data.Get(k)
+	if v == nil || v.Type() != fastjson.TypeString {
+		return
+	}
+	str := v.String()
+	tm, err := time.Parse("2006-01-02", str)
+	if err != nil {
+		tm, err = time.Parse("2006-01-02 15:04:05", str)
+		if err != nil {
+			tm, err = time.Parse("2006-01-02T15:04:05.999999999+08:00", str)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+		}
+	}
+	return tm
 }
 func (t *GJSON) GetObject(k string) (result *GJSON) {
 	result = new(GJSON)
