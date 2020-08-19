@@ -156,6 +156,40 @@ func (t *GJSON) Item(index int) (result *GJSON) {
 	return
 }
 
+func (t *GJSON) Interface() interface{} {
+	//map[string]interface{}
+	if t.data.Type() == fastjson.TypeObject {
+		obj, err := t.data.Object()
+		if err != nil {
+			return make(map[string]interface{})
+		} else {
+			result := make(map[string]interface{}, obj.Len())
+			obj.Visit(func(key []byte, v *fastjson.Value) {
+				switch v.Type() {
+				case fastjson.TypeArray, fastjson.TypeObject, fastjson.TypeNull:
+					result[string(key)] = ""
+				case fastjson.TypeString:
+					result[string(key)] = string([]byte(v.String())[1 : len(v.String())-1])
+				case fastjson.TypeTrue:
+					result[string(key)] = true
+				case fastjson.TypeFalse:
+					result[string(key)] = false
+				case fastjson.TypeNumber:
+					if strings.Contains(v.String(), ".") {
+						f, _ := v.Float64()
+						result[string(key)] = f
+					} else {
+						i, _ := v.Int64()
+						result[string(key)] = i
+					}
+				}
+			})
+			return result
+		}
+	}
+	return nil
+}
+
 //Load  load string
 func (t *GJSON) Load(s string) (err error) {
 	v, err := fastjson.Parse(s)
